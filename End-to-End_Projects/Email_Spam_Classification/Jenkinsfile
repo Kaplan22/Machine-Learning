@@ -1,0 +1,28 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build Docker Image') {
+            steps {
+                // Checkout code from version control
+                git 'https://github.com/Kaplan22/Machine-Learning.git'
+
+                // Build Docker image
+                script {
+                    def dockerImage = docker.build('kaplan22/email-spam-classifier:latest')
+                }
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                // Push Docker image to Docker Hub
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'kaplan22-deploy') {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+    }
+}
